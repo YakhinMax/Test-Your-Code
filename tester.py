@@ -20,8 +20,8 @@ def load_test_cases(filename):
             for line in f:
                 if '=' in line:
                     input_part, output_part = line.strip().split('=')
-                    inputs = [float(x) for x in input_part.split(',')]
-                    expected_output = int(output_part.strip())
+                    inputs = [float(x) if '.' in x else int(x) for x in input_part.split(',')]
+                    expected_output = output_part.strip().split(',')
                     test_cases.append((inputs, expected_output))
     except Exception as e:
         print(f"Error reading test cases: {e}")
@@ -46,7 +46,11 @@ def run_test(input_data, expected_output):
 
             output, error = process.communicate(input=input_text, timeout=3)
 
-            return output.replace('\n','') == str(expected_output), output, expected_output, error
+            output_lines = output.strip().splitlines()
+
+            passed = [l.lower() for l in output_lines] == [l.lower() for l in expected_output]
+
+            return passed, output_lines, expected_output, error
 
         except (subprocess.CalledProcessError, FileNotFoundError):
             continue
