@@ -51,7 +51,9 @@ def run_test(input_data, expected_output):
             passed = [l.lower() for l in output_lines] == [l.lower() for l in expected_output]
 
             return passed, output_lines, expected_output, error
-
+        
+        except subprocess.TimeoutExpired:
+            return False, "Timeout error", expected_output, None
         except (subprocess.CalledProcessError, FileNotFoundError):
             continue
 
@@ -61,11 +63,12 @@ def run_test(input_data, expected_output):
 for i, (input_data, expected_output) in enumerate(test_cases):
     passed, output, expected, error = run_test(input_data, expected_output)
     if passed:
-        print(f"Test {i+1} passed.")
+        print("Test " + str(i+1) + " passed.")
     else:
-        print(f"Test {i+1} failed.\n")
-        print(f"Input:\n{input_data}\nExpected:\n{expected}\nGot:\n{output}")
+        print("Test " + str(i+1) + " failed.\n")
+        print(f"Input:\n{input_data}\nExpected:\n{expected}\nGot:\n{output}\n")
         if error:
-            print(f"Error:\n{error}")
+            print("Error:")
+            print(error)
             break
             
